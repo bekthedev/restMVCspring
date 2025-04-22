@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class RestMvCspringApplication {
 
     public static void main(String[] args) {
+
         SpringApplication.run(RestMvCspringApplication.class, args);
     }
 
