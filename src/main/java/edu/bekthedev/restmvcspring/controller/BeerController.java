@@ -5,20 +5,27 @@ import edu.bekthedev.restmvcspring.service.BeerService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
-@Controller
+@RestController
 public class BeerController {
 
-    public final BeerService beerService;
+    private final BeerService beerService;
+
+    @RequestMapping("/api/v1/beer")
+    public List<Beer> listBeer(){
+        return beerService.listBeers();
+    }
 
     public Beer getBeerById(UUID id) {
 
-        log.debug("Getting beer by id in controller was called");
+        log.debug("Get Beer by Id - in controller");
 
         return beerService.getBeerById(id);
     }
