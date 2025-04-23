@@ -73,8 +73,10 @@ public class BeerServiceImpl implements BeerService {
         return beerMap.get(id);
     }
 
+
     @Override
-    public Beer savedNewBeer(Beer beer){
+    public Beer saveNewBeer(Beer beer) {
+
         Beer savedBeer = Beer.builder()
                 .id(UUID.randomUUID())
                 .createdDate(LocalDateTime.now())
@@ -87,6 +89,7 @@ public class BeerServiceImpl implements BeerService {
                 .build();
 
         beerMap.put(savedBeer.getId(), savedBeer);
+
         return savedBeer;
     }
 }

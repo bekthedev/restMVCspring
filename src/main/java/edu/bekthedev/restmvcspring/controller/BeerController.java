@@ -5,7 +5,6 @@ import edu.bekthedev.restmvcspring.service.BeerService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +30,6 @@ public class BeerController {
                 .header("Location", "/api/v1/beer/" + savedBeer.getId())
                 .build();
     }
-
-
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Beer> listBeer(){

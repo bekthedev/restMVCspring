@@ -1,5 +1,6 @@
 package edu.bekthedev.restmvcspring.service;
 
+import edu.bekthedev.restmvcspring.model.Beer;
 import edu.bekthedev.restmvcspring.model.Customer;
 
 import java.util.List;
@@ -10,4 +11,7 @@ public interface CustomerService {
         Customer getCustomerById(UUID id);
 
         List<Customer> getAllCustomers();
+
+        Customer saveNewCustomer(Customer customer);
+
     }
