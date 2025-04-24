@@ -19,6 +19,31 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+
+    @PatchMapping({"{customerId}"})
+    public ResponseEntity<Void> updateCustomerPatchById(@PathVariable("customerId") UUID customerId,
+                                                        @RequestBody Customer customer){
+        customerService.patchCustomerById(customerId, customer);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("{customerId}")
+    public ResponseEntity<Void> deleteById(@PathVariable("customerId") UUID customerId) {
+        customerService.deleteCustomerById(customerId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
+
+    @PutMapping("{customerId}")
+    public ResponseEntity<Void> updateCustomerById(@PathVariable("customerId") UUID customerId,
+                                                   @RequestBody Customer customer){
+        customerService.updateCustomerById(customerId, customer);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
+
     @PostMapping
     public ResponseEntity<Void> handlePost(@RequestBody Customer customer){
         Customer savedCustomer = customerService.saveNewCustomer(customer);

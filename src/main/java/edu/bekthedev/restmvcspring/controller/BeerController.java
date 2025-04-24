@@ -20,9 +20,30 @@ public class BeerController {
 
     private final BeerService beerService;
 
+    @PatchMapping("{beerId}")
+    public ResponseEntity<Void> updateBeerPatchById(@PathVariable("beerId")UUID beerId, @RequestBody Beer beer){
+
+        beerService.patchBeerById(beerId, beer);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
+    @DeleteMapping("{beerId}")
+    public ResponseEntity<Void> deleteById(@PathVariable("beerId") UUID beerId){
+        beerService.deleteBeerById(beerId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("{beerId}")
+    public ResponseEntity<Void> updateById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer){
+        beerService.updateBeerById(beerId, beer);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @PostMapping
     public ResponseEntity<Void> handlePost(@RequestBody Beer beer){
-
+        System.out.println("Received Beer: " + beer);
         Beer savedBeer = beerService.saveNewBeer(beer);
 
         return ResponseEntity

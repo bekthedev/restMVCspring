@@ -1,22 +1,46 @@
 package edu.bekthedev.restmvcspring.controller;
 
+import edu.bekthedev.restmvcspring.model.Beer;
+import edu.bekthedev.restmvcspring.service.BeerService;
+import edu.bekthedev.restmvcspring.service.BeerServiceImpl;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@WebMvcTest(BeerController.class)
+@ActiveProfiles("test")
 class BeerControllerTest {
 
     @Autowired
-    BeerController beerController;
+    MockMvc mockMvc;
+
+    @MockitoBean
+    BeerService beerService;
+
+    BeerServiceImpl beerServiceImpl = new BeerServiceImpl();
 
     @Test
-    void getBeerById() {
+    void getBeerById() throws Exception {
+        Beer testBeer = beerServiceImpl.listBeers().get(0);
+        System.out.println("Returned Beer: " + testBeer);
+        given(beerService.getBeerById(any(UUID.class))).willReturn(testBeer);
 
-        System.out.println(beerController.getBeerById(UUID.randomUUID()));
+        mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 }
