@@ -5,23 +5,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.bekthedev.restmvcspring.model.Beer;
 import edu.bekthedev.restmvcspring.service.BeerService;
 import edu.bekthedev.restmvcspring.service.BeerServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.UUID;
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BeerController.class)
-@ActiveProfiles("test")
 class BeerControllerTest {
 
     @Autowired
@@ -33,8 +34,25 @@ class BeerControllerTest {
     @MockitoBean
     BeerService beerService;
 
-    BeerServiceImpl beerServiceImpl = new BeerServiceImpl();
+    BeerServiceImpl beerServiceImpl;
 
+    @BeforeEach
+    void setUp() {
+        beerServiceImpl = new BeerServiceImpl();
+    }
+
+    @Test
+    void testUpdateBeer() throws Exception {
+        Beer beer = beerServiceImpl.listBeers().get(0);
+
+        mockMvc.perform(put("/api/v1/beer/" + beer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer)))
+                .andExpect(status().isNoContent());
+
+        verify(beerService).updateBeerById(any(UUID.class), any(Beer.class));
+    }
 
     @Test
     void testCreateNewBeer() throws Exception {
@@ -66,8 +84,6 @@ class BeerControllerTest {
     @Test
     void getBeerById() throws Exception {
         Beer testBeer = beerServiceImpl.listBeers().get(0);
-
-        System.out.println("Returned Beer: " + testBeer);
 
         given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
 

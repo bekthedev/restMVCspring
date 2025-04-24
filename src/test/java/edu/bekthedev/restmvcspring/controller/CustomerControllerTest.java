@@ -1,19 +1,26 @@
 package edu.bekthedev.restmvcspring.controller;
 
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.bekthedev.restmvcspring.model.Customer;
 import edu.bekthedev.restmvcspring.service.CustomerService;
 import edu.bekthedev.restmvcspring.service.CustomerServiceImpl;
-import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
+
 import static org.hamcrest.core.Is.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CustomerController.class)
@@ -25,7 +32,44 @@ class CustomerControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    CustomerServiceImpl customerServiceImpl = new CustomerServiceImpl();
+    @Autowired
+    ObjectMapper objectMapper;
+
+    CustomerServiceImpl customerServiceImpl;
+
+    @BeforeEach
+    void setUp() {
+        customerServiceImpl = new CustomerServiceImpl();
+    }
+
+    @Test
+    void testUpdateCustomer() throws Exception {
+        Customer customer = customerServiceImpl.getAllCustomers().get(0);
+
+        mockMvc.perform(put("/api/v1/customer/" + customer.getId())
+                        .content(objectMapper.writeValueAsString(customer))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        verify(customerService).updateCustomerById(any(UUID.class), any(Customer.class));
+    }
+
+    @Test
+    void testCreateCustomer() throws Exception {
+        Customer customer = customerServiceImpl.getAllCustomers().get(0);
+        customer.setId(null);
+        customer.setVersion(null);
+
+        given(customerService.saveNewCustomer(any(Customer.class)))
+                .willReturn(customerServiceImpl.getAllCustomers().get(1));
+
+        mockMvc.perform(post("/api/v1/customer").contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customer)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
+    }
 
     @Test
     void listAllCustomers() throws Exception {
